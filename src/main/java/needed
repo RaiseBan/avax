@@ -1,0 +1,172 @@
+import java.util.List;
+
+public class StatisticalFunctions {
+
+    // Функция для вычисления среднего значения (математического ожидания)
+    public static double calculateMean(List<Double> values) {
+        double sum = 0.0;
+        for (double value : values) {
+            sum += value;
+        }
+        return sum / values.size();
+    }
+
+    // Функция для вычисления исправленного стандартного отклонения
+    public static double calculateCorrectedStdDev(List<Double> values) {
+        double mean = calculateMean(values);
+        double sumOfSquares = 0.0;
+        for (double value : values) {
+            sumOfSquares += Math.pow(value - mean, 2);
+        }
+        return Math.sqrt(sumOfSquares / (values.size() - 1));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public void takeNewSale() throws InterruptedException {
+    WebDriverWait wait = new WebDriverWait(driver, 10);
+    driver.get("https://avax.hyperspace.xyz/collection/avax/2b052ded-2ee6-4005-86d9-c14e5cd609ad");
+    System.out.println("NEW DRIVER WORKING...");
+    wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".MuiTypography-root.MuiTypography-body1.css-wh8dwp"))).click();
+
+    long lastActionTime = System.currentTimeMillis();
+    String color;
+    int greenCount, resCount;
+
+    while (true) {
+        if ((System.currentTimeMillis() - lastActionTime) >= 20000) {
+            performPeriodicAction();
+            lastActionTime = System.currentTimeMillis();
+        }
+
+        try {
+            List<WebElement> rows = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("tr[data-index]")));
+            for (int i = 0; i < Math.min(10, rows.size()); i++) {
+                List<WebElement> cells = rows.get(i).findElements(By.tagName("td"));
+                if (cells.size() > 6) {
+                    processRow(cells);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Обновление таблицы...");
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+BUFFER:
+
+
+public void takeNewSale() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        //https://avax.hyperspace.xyz/collection/avax/5ad14893-3f7e-4be2-9205-d2122591c9f2
+        driver.get("https://avax.hyperspace.xyz/collection/avax/2b052ded-2ee6-4005-86d9-c14e5cd609ad");
+        System.out.println("NEW DRIVER WORKING...");
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".MuiTypography-root.MuiTypography-body1.css-wh8dwp"))).click();
+
+//        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".MuiSkeleton-root"))); // Сомнительно, нууу оУкей
+        long lastActionTime = System.currentTimeMillis();
+        String color = "";
+        int greenCount = threadSafeStructure.get("greenSales").size();
+        int resCount = threadSafeStructure.get("redSales").size();
+        if (greenCount >= resCount){
+            threadSafeStructure.setFlag("green");
+        }else{
+            threadSafeStructure.setFlag("red");
+        }
+        while (true) {
+            if ((System.currentTimeMillis() - lastActionTime) >= 20000) {
+                // Вставляем действия, которые нужно выполнить каждые 20 секунд
+                performPeriodicAction();
+                lastActionTime = System.currentTimeMillis(); // Сброс времени для следующего действия
+            }
+            try {
+                WebElement firstRow = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("tr[data-index='0']")));
+                List<WebElement> cells = firstRow.findElements(By.tagName("td"));
+
+                // Проверяем, что ячеек достаточно для извлечения данных
+                if (cells.size() > 6) { // убедитесь, что есть как минимум 6 ячеек
+                    String value2 = cells.get(2).getText(); // значение столбца 2
+                    String value3 = cells.get(3).getText(); // значение столбца 3
+                    String value4 = cells.get(4).getText(); // значение столбца 4
+                    String value5 = cells.get(5).getText(); // значение столбца 5
+                    if (value2  == null || value2  == "" || value3 == null || value3  == "" || value4 == null || value4 == "" || value5 == null || value5 == ""){
+                        continue;
+                    }
+                    try {
+                        // Пытаемся найти элемент с классом 'MuiBox-root css-1sbmayt'
+                        cells.get(6).findElement(By.cssSelector(".MuiBox-root.css-1sbmayt"));
+                        // Если элемент найден, выводим "red"
+//                        System.out.println("red");
+                        color = "redSales";
+                        resCount += 1;
+                    } catch (NoSuchElementException e) {
+                        // Если элемент не найден, значит класс 'css-1sbmayt' отсутствует, выводим "green"
+                        color = "greenSales";
+                        greenCount += 1;
+//                        System.out.println("green");
+                    }
+                    if (greenCount >= resCount){
+                        threadSafeStructure.setFlag("greenSales");
+                    }else{
+                        threadSafeStructure.setFlag("redSales");
+                    }
+
+                    List<List<String>> mainCollection = threadSafeStructure.get(color);
+                    if (threadSafeStructure.get(color).size() <= 15){
+                        ArrayList<String> list = new ArrayList<String>() {{
+                            add(value2);
+                            add(value3);
+                            add(value4);
+                            add(value5);
+                        }};
+                        if (!Objects.equals(mainCollection.get(0).get(0), value2)) {
+                            threadSafeStructure.addNewListByKey(color, list);
+                        }
+                    }else{
+                        threadSafeStructure.removeLastFromList(color);
+                        ArrayList<String> list = new ArrayList<>() {{
+                            add(value2);
+                            add(value3);
+                            add(value4);
+                            add(value5);
+                        }};
+                        if (!Objects.equals(mainCollection.get(0).get(0), value2)) {
+                            threadSafeStructure.addNewListByKey(color, list);
+                        }
+                    }
+
+
+//                    System.out.println("Значение столбца 2: " + value2);
+//                    System.out.println("Значение столбца 3: " + value3);
+//                    System.out.println("Значение столбца 4: " + value4);
+//                    System.out.println("Значение столбца 5: " + value5);
+                }
+            } catch (Exception e) {
+                System.out.println("Обновление таблицы...");
+                e.printStackTrace();
+//                driver.navigate().refresh();
+//                Thread.sleep(2000);
+
+            }
+        }
+    }
+
+
